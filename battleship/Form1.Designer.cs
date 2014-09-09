@@ -53,8 +53,16 @@
             this.BTN_Attack = new System.Windows.Forms.Button();
             this.BTN_NouvellePartie = new System.Windows.Forms.Button();
             this.BTN_Quit = new System.Windows.Forms.Button();
+            this.RBTN_PorteAvion = new System.Windows.Forms.RadioButton();
+            this.RBTN_Croiseur = new System.Windows.Forms.RadioButton();
+            this.RBTN_ContreTorpille = new System.Windows.Forms.RadioButton();
+            this.RBTN_SousMarin = new System.Windows.Forms.RadioButton();
+            this.RBTN_Torpilleur = new System.Windows.Forms.RadioButton();
+            this.BTN_Place = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.GridAttack)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridPlayer)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // GridAttack
@@ -255,7 +263,7 @@
             this.BTN_Attack.Name = "BTN_Attack";
             this.BTN_Attack.Size = new System.Drawing.Size(106, 44);
             this.BTN_Attack.TabIndex = 2;
-            this.BTN_Attack.Text = "Attack";
+            this.BTN_Attack.Text = "Attaque";
             this.BTN_Attack.UseVisualStyleBackColor = true;
             this.BTN_Attack.Click += new System.EventHandler(this.BTN_Attack_Click);
             // 
@@ -267,6 +275,8 @@
             this.BTN_NouvellePartie.TabIndex = 3;
             this.BTN_NouvellePartie.Text = "Nouvelle Partie";
             this.BTN_NouvellePartie.UseVisualStyleBackColor = true;
+            this.BTN_NouvellePartie.Visible = false;
+            this.BTN_NouvellePartie.Click += new System.EventHandler(this.BTN_NouvellePartie_Click);
             // 
             // BTN_Quit
             // 
@@ -277,20 +287,106 @@
             this.BTN_Quit.Text = "Quitter";
             this.BTN_Quit.UseVisualStyleBackColor = true;
             // 
+            // RBTN_PorteAvion
+            // 
+            this.RBTN_PorteAvion.AutoSize = true;
+            this.RBTN_PorteAvion.Location = new System.Drawing.Point(3, 3);
+            this.RBTN_PorteAvion.Name = "RBTN_PorteAvion";
+            this.RBTN_PorteAvion.Size = new System.Drawing.Size(80, 17);
+            this.RBTN_PorteAvion.TabIndex = 5;
+            this.RBTN_PorteAvion.TabStop = true;
+            this.RBTN_PorteAvion.Text = "Porte Avion";
+            this.RBTN_PorteAvion.UseVisualStyleBackColor = true;
+            this.RBTN_PorteAvion.CheckedChanged += new System.EventHandler(this.RBTN_Bateau_CheckedChanged);
+            // 
+            // RBTN_Croiseur
+            // 
+            this.RBTN_Croiseur.AutoSize = true;
+            this.RBTN_Croiseur.Location = new System.Drawing.Point(3, 26);
+            this.RBTN_Croiseur.Name = "RBTN_Croiseur";
+            this.RBTN_Croiseur.Size = new System.Drawing.Size(63, 17);
+            this.RBTN_Croiseur.TabIndex = 6;
+            this.RBTN_Croiseur.TabStop = true;
+            this.RBTN_Croiseur.Text = "Croiseur";
+            this.RBTN_Croiseur.UseVisualStyleBackColor = true;
+            this.RBTN_Croiseur.CheckedChanged += new System.EventHandler(this.RBTN_Bateau_CheckedChanged);
+            // 
+            // RBTN_ContreTorpille
+            // 
+            this.RBTN_ContreTorpille.AutoSize = true;
+            this.RBTN_ContreTorpille.Location = new System.Drawing.Point(3, 49);
+            this.RBTN_ContreTorpille.Name = "RBTN_ContreTorpille";
+            this.RBTN_ContreTorpille.Size = new System.Drawing.Size(98, 17);
+            this.RBTN_ContreTorpille.TabIndex = 7;
+            this.RBTN_ContreTorpille.TabStop = true;
+            this.RBTN_ContreTorpille.Text = "Contre-torpilleur";
+            this.RBTN_ContreTorpille.UseVisualStyleBackColor = true;
+            this.RBTN_ContreTorpille.CheckedChanged += new System.EventHandler(this.RBTN_Bateau_CheckedChanged);
+            // 
+            // RBTN_SousMarin
+            // 
+            this.RBTN_SousMarin.AutoSize = true;
+            this.RBTN_SousMarin.Location = new System.Drawing.Point(3, 72);
+            this.RBTN_SousMarin.Name = "RBTN_SousMarin";
+            this.RBTN_SousMarin.Size = new System.Drawing.Size(75, 17);
+            this.RBTN_SousMarin.TabIndex = 8;
+            this.RBTN_SousMarin.TabStop = true;
+            this.RBTN_SousMarin.Text = "sous-marin";
+            this.RBTN_SousMarin.UseVisualStyleBackColor = true;
+            this.RBTN_SousMarin.CheckedChanged += new System.EventHandler(this.RBTN_Bateau_CheckedChanged);
+            // 
+            // RBTN_Torpilleur
+            // 
+            this.RBTN_Torpilleur.AutoSize = true;
+            this.RBTN_Torpilleur.Location = new System.Drawing.Point(3, 90);
+            this.RBTN_Torpilleur.Name = "RBTN_Torpilleur";
+            this.RBTN_Torpilleur.Size = new System.Drawing.Size(64, 17);
+            this.RBTN_Torpilleur.TabIndex = 9;
+            this.RBTN_Torpilleur.TabStop = true;
+            this.RBTN_Torpilleur.Text = "torpilleur";
+            this.RBTN_Torpilleur.UseVisualStyleBackColor = true;
+            this.RBTN_Torpilleur.CheckedChanged += new System.EventHandler(this.RBTN_Bateau_CheckedChanged);
+            // 
+            // BTN_Place
+            // 
+            this.BTN_Place.Location = new System.Drawing.Point(598, 393);
+            this.BTN_Place.Name = "BTN_Place";
+            this.BTN_Place.Size = new System.Drawing.Size(98, 37);
+            this.BTN_Place.TabIndex = 10;
+            this.BTN_Place.Text = "prêt";
+            this.BTN_Place.UseVisualStyleBackColor = true;
+            this.BTN_Place.Click += new System.EventHandler(this.BTN_Place_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.RBTN_PorteAvion);
+            this.panel1.Controls.Add(this.RBTN_Croiseur);
+            this.panel1.Controls.Add(this.RBTN_Torpilleur);
+            this.panel1.Controls.Add(this.RBTN_ContreTorpille);
+            this.panel1.Controls.Add(this.RBTN_SousMarin);
+            this.panel1.Location = new System.Drawing.Point(598, 277);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(106, 110);
+            this.panel1.TabIndex = 11;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(962, 509);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.BTN_Place);
             this.Controls.Add(this.BTN_Quit);
             this.Controls.Add(this.BTN_NouvellePartie);
             this.Controls.Add(this.BTN_Attack);
             this.Controls.Add(this.GridPlayer);
             this.Controls.Add(this.GridAttack);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "battleship";
             ((System.ComponentModel.ISupportInitialize)(this.GridAttack)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridPlayer)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -322,6 +418,13 @@
         private System.Windows.Forms.Button BTN_Attack;
         private System.Windows.Forms.Button BTN_NouvellePartie;
         private System.Windows.Forms.Button BTN_Quit;
+        private System.Windows.Forms.RadioButton RBTN_PorteAvion;
+        private System.Windows.Forms.RadioButton RBTN_Croiseur;
+        private System.Windows.Forms.RadioButton RBTN_ContreTorpille;
+        private System.Windows.Forms.RadioButton RBTN_SousMarin;
+        private System.Windows.Forms.RadioButton RBTN_Torpilleur;
+        private System.Windows.Forms.Button BTN_Place;
+        private System.Windows.Forms.Panel panel1;
 
     }
 }
