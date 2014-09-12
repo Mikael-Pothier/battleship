@@ -19,6 +19,9 @@ namespace battleship
     };
     public partial class Form1 : Form
     {
+        int posDepartX;
+        int posDepartY;
+        bool firstClick = true;
         String [] ligneHeader={"A","B","C","D","E","F","G","H","I","J"};
         int  bateauChoisisLength = (int)bateauLength.PorteAvion;
         public Form1()
@@ -82,16 +85,123 @@ namespace battleship
                     GridPlayer.Rows[i].Cells[y].Style.BackColor = Color.White;
                 }
             }
+            enabledCheckBox();
         }
-
+        private void enabledCheckBox(){
+            RBTN_PorteAvion.Enabled = true;
+            RBTN_Croiseur.Enabled = true;
+            RBTN_ContreTorpille.Enabled = true;
+            RBTN_SousMarin.Enabled = true;
+            RBTN_Torpilleur.Enabled = true;
+        }
         private void GridPlayer_Click(object sender,EventArgs e)
         {
-            int posX = getposX();
-            int posY = getposY();
-            GridPlayer.Rows[posY].Cells[posX].Selected = false;
-            GridPlayer.Rows[posY].Cells[posX].Style.BackColor = Color.Gray;
-            choix(posX, posY);
+            if (firstClick)
+            {
+                posDepartX = getposX();
+                posDepartY = getposY();
+                if (GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor != Color.Black) { 
+                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Selected = false;
+                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor = Color.Gray;
+                    choix(posDepartX, posDepartY);
+                    firstClick = false;
+                    //enleve le choix des bateau donc il ne peut pas en choisisr dautre lors du deuxieme click
+                    panel1.Visible = false;
+                }
+                else{
+                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Selected = false;
+                }
+            }
+            else {
+                 placerBateau();
+                 if (firstClick) { 
+                     enleverChoix();
+                     panel1.Visible = true;
+                     disableCheckBox();
+                }
+            }
 
+        }
+        //disable les checkbox si il a ete place
+        private void disableCheckBox(){
+            if(RBTN_PorteAvion.Checked)
+                RBTN_PorteAvion.Enabled=false;
+            else if(RBTN_Croiseur.Checked)
+                RBTN_Croiseur.Enabled=false;
+            else if(RBTN_ContreTorpille.Checked)
+                RBTN_ContreTorpille.Enabled=false;
+            else if(RBTN_SousMarin.Checked)
+                RBTN_SousMarin.Enabled=false;
+            else if (RBTN_Torpilleur.Checked)
+                RBTN_Torpilleur.Enabled = false;
+            trouverFirstEnabled();
+        }
+        //trouve le premier checkbox pour le 
+        private void trouverFirstEnabled() {
+            if (RBTN_PorteAvion.Enabled)
+                RBTN_PorteAvion.Checked = true;
+            else if (RBTN_Croiseur.Enabled)
+                RBTN_Croiseur.Checked = true;
+            else if (RBTN_ContreTorpille.Enabled)
+                RBTN_ContreTorpille.Checked = true;
+            else if (RBTN_SousMarin.Enabled)
+                RBTN_SousMarin.Checked = true;
+            else if (RBTN_Torpilleur.Enabled)
+                RBTN_Torpilleur.Checked = true;
+            }
+        //place le bateau selon lorientation choisis
+        private void placerBateau() {
+            int posSecondX = getposX();
+            int posSecondY = getposY();
+            //haut
+            if (posDepartX == posSecondX && posDepartY - 1 == posSecondY && GridPlayer.Rows[posSecondY].Cells[posSecondX].Style.BackColor == Color.Green)
+            {
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    GridPlayer.Rows[posDepartY - i].Cells[posDepartX].Style.BackColor = Color.Black;
+                    
+                }
+                firstClick = true;
+            }
+            //bas
+            else if (posDepartX == posSecondX && posDepartY + 1 == posSecondY && GridPlayer.Rows[posSecondY].Cells[posSecondX].Style.BackColor == Color.Green)
+            {
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    GridPlayer.Rows[posDepartY + i].Cells[posDepartX].Style.BackColor = Color.Black;
+                }
+                firstClick = true;
+            }
+            //gauche
+            else if (posDepartX - 1 == posSecondX && posDepartY == posSecondY && GridPlayer.Rows[posSecondY].Cells[posSecondX].Style.BackColor == Color.Green)
+            {
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    GridPlayer.Rows[posDepartY].Cells[posDepartX - i].Style.BackColor = Color.Black;
+                }
+                firstClick = true;
+            }
+            //droite
+            else if (posDepartX + 1 == posSecondX && posDepartY == posSecondY && GridPlayer.Rows[posSecondY].Cells[posSecondX].Style.BackColor == Color.Green)
+            {
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    GridPlayer.Rows[posDepartY].Cells[posDepartX + i].Style.BackColor = Color.Black;
+                }
+                firstClick = true;
+            }
+            GridPlayer.Rows[posSecondY].Cells[posSecondX].Selected = false;       
+        }
+        //enleve les carre vert
+        private void enleverChoix() {
+            if (posDepartY + 1 <GridPlayer.RowCount && GridPlayer.Rows[posDepartY + 1].Cells[posDepartX].Style.BackColor == Color.Green)
+            GridPlayer.Rows[posDepartY+1].Cells[posDepartX].Style.BackColor = Color.White;
+            if (posDepartY -1>=0 && GridPlayer.Rows[posDepartY - 1].Cells[posDepartX].Style.BackColor == Color.Green)
+            GridPlayer.Rows[posDepartY-1].Cells[posDepartX].Style.BackColor=Color.White;
+            if (posDepartX + 1< GridPlayer.RowCount && GridPlayer.Rows[posDepartY].Cells[posDepartX + 1].Style.BackColor == Color.Green)
+            GridPlayer.Rows[posDepartY].Cells[posDepartX+1].Style.BackColor = Color.White;
+            if (posDepartX -1 >=0 && GridPlayer.Rows[posDepartY].Cells[posDepartX - 1].Style.BackColor == Color.Green)
+            GridPlayer.Rows[posDepartY].Cells[posDepartX-1].Style.BackColor=Color.White;
         }
       //donne la posistion de la colone choisis du gridplayer
         private int getposX() {
@@ -102,20 +212,47 @@ namespace battleship
             return GridPlayer.CurrentCell.RowIndex;
         }
         //place les choix possibles lorseque l'on click pour placer un bateau(en croix)
-        private void choix(int posX,int posY) { 
-            if(posY + bateauChoisisLength <=10){
+        private void choix(int posX,int posY) {
+            //bas
+            if (posY + bateauChoisisLength <= 10 && verifierChaqueCase(posX, posY,"Down"))
                 GridPlayer.Rows[posY + 1].Cells[posX].Style.BackColor = Color.Green;
-            }
-            if(posY-bateauChoisisLength>=-1){
-                GridPlayer.Rows[posY - 1].Cells[posX].Style.BackColor = Color.Green;                
-            }
-            if(posX+bateauChoisisLength <=10){
-                GridPlayer.Rows[posY].Cells[posX+1].Style.BackColor = Color.Green;            
-            }
-            if (posX - bateauChoisisLength>=-1)
-            {
+
+            if (posY - bateauChoisisLength >= -1 && verifierChaqueCase(posX,posY,"Up"))
+                GridPlayer.Rows[posY - 1].Cells[posX].Style.BackColor = Color.Green;
+
+            if (posX + bateauChoisisLength <= 10 && verifierChaqueCase(posX,posY,"Right"))
+                GridPlayer.Rows[posY].Cells[posX+1].Style.BackColor = Color.Green;
+            if (posX - bateauChoisisLength >= -1 && verifierChaqueCase(posX, posY, "Left"))
                 GridPlayer.Rows[posY].Cells[posX-1].Style.BackColor = Color.Green;            
-            }
         }
+        //verifie si il y a deja un bateau de placer
+        private bool verifierChaqueCase(int posX, int posY,string Orientation) {
+            if (Orientation == "Up") {
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                    if (posY - i >= 0 && GridPlayer.Rows[posY - i].Cells[posX].Style.BackColor == Color.Black)
+                    {
+                        return false;
+                }
+            }
+            else if (Orientation == "Down") {
+                for (int i = 0; i < bateauChoisisLength; ++i){
+                    if (posY + i < GridPlayer.RowCount && GridPlayer.Rows[posY + i].Cells[posX].Style.BackColor == Color.Black)
+                        return false;
+                }                
+            }
+            else if (Orientation == "Left") {
+                for (int i = 0; i < bateauChoisisLength; ++i){
+                    if (posX - i >= 0 && GridPlayer.Rows[posY].Cells[posX - i].Style.BackColor == Color.Black)
+                        return false;
+                }            
+            }
+            else if (Orientation == "Right"){
+                for (int i = 0; i < bateauChoisisLength; ++i){
+                    if (posX + i < GridPlayer.RowCount && GridPlayer.Rows[posY].Cells[posX + i].Style.BackColor == Color.Black)
+                        return false;
+                }
+            }
+            return true;
+        } 
     }
 }
