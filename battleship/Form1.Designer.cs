@@ -186,6 +186,7 @@
             this.GridPlayer.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.GridPlayer.Size = new System.Drawing.Size(568, 244);
             this.GridPlayer.TabIndex = 1;
+            this.GridPlayer.Click += new System.EventHandler(this.GridPlayer_Click);
             // 
             // dataGridViewTextBoxColumn1
             // 
