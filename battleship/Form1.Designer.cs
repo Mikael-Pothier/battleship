@@ -60,6 +60,7 @@
             this.RBTN_Torpilleur = new System.Windows.Forms.RadioButton();
             this.BTN_Place = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.BTN_replace = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.GridAttack)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridPlayer)).BeginInit();
             this.panel1.SuspendLayout();
@@ -370,11 +371,22 @@
             this.panel1.Size = new System.Drawing.Size(106, 110);
             this.panel1.TabIndex = 11;
             // 
+            // BTN_replace
+            // 
+            this.BTN_replace.Location = new System.Drawing.Point(601, 437);
+            this.BTN_replace.Name = "BTN_replace";
+            this.BTN_replace.Size = new System.Drawing.Size(95, 42);
+            this.BTN_replace.TabIndex = 12;
+            this.BTN_replace.Text = "Replacer";
+            this.BTN_replace.UseVisualStyleBackColor = true;
+            this.BTN_replace.Click += new System.EventHandler(this.BTN_replace_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(962, 509);
+            this.Controls.Add(this.BTN_replace);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BTN_Place);
             this.Controls.Add(this.BTN_Quit);
@@ -426,6 +438,7 @@
         private System.Windows.Forms.RadioButton RBTN_Torpilleur;
         private System.Windows.Forms.Button BTN_Place;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button BTN_replace;
 
     }
 }

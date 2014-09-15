@@ -22,6 +22,7 @@ namespace battleship
         int posDepartX;
         int posDepartY;
         bool firstClick = true;
+        bool estCommencer = false;
         String [] ligneHeader={"A","B","C","D","E","F","G","H","I","J"};
         int  bateauChoisisLength = (int)bateauLength.PorteAvion;
         public Form1()
@@ -68,10 +69,27 @@ namespace battleship
         /*RESTE A PLACER LES BATEAU DANS LA MATRICE*/
         private void BTN_Place_Click(object sender, EventArgs e)
         {
-            RBTN_PorteAvion.Checked=true;
-            panel1.Visible = false;
-            BTN_Place.Visible = false;
-            BTN_NouvellePartie.Visible = true;
+            if (estPlace())
+            {
+                RBTN_PorteAvion.Checked = true;
+                panel1.Visible = false;
+
+                BTN_Place.Visible = false;
+                BTN_replace.Visible = false;
+
+                estCommencer = true;
+                BTN_NouvellePartie.Visible = true;
+            }
+            else
+            {
+                MessageBox.Show("Placer tout les bateaux pour commencer la partie");
+            }
+        }
+        //retourne si tout les bateaux sont places
+        //return true si tout les bateau sont place
+        private bool estPlace()
+        {
+            return !RBTN_ContreTorpille.Enabled && !RBTN_Croiseur.Enabled && !RBTN_PorteAvion.Enabled && !RBTN_SousMarin.Enabled && !RBTN_Torpilleur.Enabled;
         }
         //creer une nouvelle partie !
         /*POUR LINSTANT IL NE FAIT QU AFFICHER LES RADIO BUTTON ET LE BUTTON PRET*/
@@ -80,12 +98,22 @@ namespace battleship
             BTN_NouvellePartie.Visible = false;
             panel1.Visible = true;
             BTN_Place.Visible = true;
-            for (int i = 0; i < GridPlayer.ColumnCount; ++i){
-                for (int y = 0; y < GridPlayer.RowCount; ++y) {
+            BTN_replace.Visible = true;
+
+            enleverBateau();
+            enabledCheckBox();
+
+            estCommencer = false;
+            firstClick = true;
+        }
+        private void enleverBateau() {
+            for (int i = 0; i < GridPlayer.ColumnCount; ++i)
+            {
+                for (int y = 0; y < GridPlayer.RowCount; ++y)
+                {
                     GridPlayer.Rows[i].Cells[y].Style.BackColor = Color.White;
                 }
-            }
-            enabledCheckBox();
+            }            
         }
         private void enabledCheckBox(){
             RBTN_PorteAvion.Enabled = true;
@@ -96,29 +124,40 @@ namespace battleship
         }
         private void GridPlayer_Click(object sender,EventArgs e)
         {
-            if (firstClick)
+            if (!estCommencer && !estPlace())
             {
-                posDepartX = getposX();
-                posDepartY = getposY();
-                if (GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor != Color.Black) { 
-                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Selected = false;
-                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor = Color.Gray;
-                    choix(posDepartX, posDepartY);
-                    firstClick = false;
-                    //enleve le choix des bateau donc il ne peut pas en choisisr dautre lors du deuxieme click
-                    panel1.Visible = false;
+                if (firstClick)
+                {
+                    posDepartX = getposX();
+                    posDepartY = getposY();
+                    if (GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor != Color.Black)
+                    {
+                        GridPlayer.Rows[posDepartY].Cells[posDepartX].Selected = false;
+                        GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor = Color.Gray;
+                        choix(posDepartX, posDepartY);
+                        firstClick = false;
+                        //enleve le choix des bateau donc il ne peut pas en choisisr dautre lors du deuxieme click
+                        panel1.Visible = false;
+                    }
+                    else
+                    {
+                        GridPlayer.ClearSelection();
+                    }
                 }
-                else{
-                    GridPlayer.Rows[posDepartY].Cells[posDepartX].Selected = false;
+                else
+                {
+                    placerBateau();
+                    if (firstClick)
+                    {
+                        enleverChoix();
+                        panel1.Visible = true;
+                        disableCheckBox();
+                    }
                 }
             }
-            else {
-                 placerBateau();
-                 if (firstClick) { 
-                     enleverChoix();
-                     panel1.Visible = true;
-                     disableCheckBox();
-                }
+            else
+            {
+                GridPlayer.ClearSelection();
             }
 
         }
@@ -253,6 +292,14 @@ namespace battleship
                 }
             }
             return true;
+        }
+        //enleve tout les bateau de la grille et permet de replacer les bateau
+        private void BTN_replace_Click(object sender, EventArgs e)
+        {
+            firstClick = true;
+            enabledCheckBox();
+            enleverBateau();
+            panel1.Visible = true;
         } 
     }
 }
