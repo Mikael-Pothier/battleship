@@ -10,21 +10,31 @@ using System.Windows.Forms;
 
 namespace battleship
 {
-    enum bateauLength{
-        PorteAvion=5,
-        Croisseur=4,
-        ContreTorpilleur=3,
-        SousMarin=3,
-        Torpilleur=2
-    };
     public partial class Form1 : Form
     {
+        const int bateauCellule = 3;
+        const int attaque = 4;
+
         int posDepartX;
         int posDepartY;
+
         bool firstClick = true;
         bool estCommencer = false;
+
         String [] ligneHeader={"A","B","C","D","E","F","G","H","I","J"};
-        int  bateauChoisisLength = (int)bateauLength.PorteAvion;
+        Bateau PorteAvion = new Bateau(5, "Porte-Avion");
+        Bateau Croiseur = new Bateau(4, "Croiseur");
+        Bateau ContreTorpille = new Bateau(3,"Contre-Torpilleur");
+        Bateau SousMarin = new Bateau(3,"Sous-Marin");
+        Bateau Torpilleur = new Bateau(2,"Torpilleur");
+        int bateauChoisisLength;
+        int[,] matriceAttaque = new int[10, 10];
+        int[,] matricePosition = new int[10, 10];
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            bateauChoisisLength = PorteAvion.longueur;
+        }
         public Form1()
         {
             InitializeComponent();
@@ -39,29 +49,40 @@ namespace battleship
                 GridPlayer.Rows[i].HeaderCell.Value = ligneHeader[i];
             }
         }
-
+        //fait une attaque
+        //pas finis
         private void BTN_Attack_Click(object sender, EventArgs e)
         {
+            int posX = GridAttack.CurrentCell.ColumnIndex;
+            int posY= GridAttack.CurrentCell.RowIndex;
+            if (matriceAttaque[posX, posY] == 0)
+            {
+                //envoyer posx,posy
+            }
+            else
+            {
+                MessageBox.Show("Vous-avez déjà lancé une torpille ici");
+            }
 
         }
         //place la grosseur du bateau choisis
         private void RBTN_Bateau_CheckedChanged(object sender, EventArgs e)
         {
             if(RBTN_Croiseur.Checked){
-                bateauChoisisLength = (int)bateauLength.Croisseur;
+                bateauChoisisLength =Croiseur.longueur;
             }
             else if(RBTN_ContreTorpille.Checked){
-                bateauChoisisLength = (int)bateauLength.ContreTorpilleur;
+                bateauChoisisLength = ContreTorpille.longueur;
             }
             else if(RBTN_SousMarin.Checked){
-                bateauChoisisLength = (int)bateauLength.SousMarin;
+                bateauChoisisLength = SousMarin.longueur;
             }
             else if (RBTN_Torpilleur.Checked)
             {
-                bateauChoisisLength = (int)bateauLength.Torpilleur;
+                bateauChoisisLength = Torpilleur.longueur;
             }
             else {
-                bateauChoisisLength = (int)bateauLength.PorteAvion;
+                bateauChoisisLength = PorteAvion.longueur;
             }
         }
 
@@ -79,12 +100,28 @@ namespace battleship
 
                 estCommencer = true;
                 BTN_NouvellePartie.Visible = true;
+
+                placerBateauMatrice();
             }
             else
             {
                 MessageBox.Show("Placer tout les bateaux pour commencer la partie");
             }
         }
+        //place les bateau dans la matrice
+        private void placerBateauMatrice() {
+            for (int i = 0; i < GridPlayer.RowCount; ++i)
+            {
+                for (int j = 0; j < GridPlayer.ColumnCount; ++j)
+                {
+                    if (GridPlayer.Rows[i].Cells[j].Style.BackColor == Color.Black)
+                    {
+                        matricePosition[i, j] = bateauCellule;
+                    }
+                }
+            }
+        }
+
         //retourne si tout les bateaux sont places
         //return true si tout les bateau sont place
         private bool estPlace()
@@ -192,14 +229,18 @@ namespace battleship
         private void placerBateau() {
             int posSecondX = getposX();
             int posSecondY = getposY();
+            int posFinX = 0;
+            int posFinY = 0;
             //haut
             if (posDepartX == posSecondX && posDepartY - 1 == posSecondY && GridPlayer.Rows[posSecondY].Cells[posSecondX].Style.BackColor == Color.Green)
             {
                 for (int i = 0; i < bateauChoisisLength; ++i)
                 {
                     GridPlayer.Rows[posDepartY - i].Cells[posDepartX].Style.BackColor = Color.Black;
-                    
+                    posFinY = posDepartY-i;
                 }
+                posFinY = posDepartY - bateauChoisisLength-1;
+                posFinX = posDepartX;
                 firstClick = true;
             }
             //bas
@@ -209,6 +250,8 @@ namespace battleship
                 {
                     GridPlayer.Rows[posDepartY + i].Cells[posDepartX].Style.BackColor = Color.Black;
                 }
+                posFinY = posDepartY + bateauChoisisLength - 1;
+                posFinX = posDepartX;
                 firstClick = true;
             }
             //gauche
@@ -218,6 +261,8 @@ namespace battleship
                 {
                     GridPlayer.Rows[posDepartY].Cells[posDepartX - i].Style.BackColor = Color.Black;
                 }
+                posFinX = posDepartX - bateauChoisisLength - 1;
+                posFinY = posDepartY;
                 firstClick = true;
             }
             //droite
@@ -229,7 +274,49 @@ namespace battleship
                 }
                 firstClick = true;
             }
-            GridPlayer.Rows[posSecondY].Cells[posSecondX].Selected = false;       
+            posFinX = posDepartX + bateauChoisisLength - 1;
+            posFinY = posDepartY;
+            GridPlayer.Rows[posSecondY].Cells[posSecondX].Selected = false;
+            initCoordoneebateau(posFinX, posFinY);
+        }
+        private void initCoordoneebateau(int finX, int finY)
+        {
+
+            if(RBTN_PorteAvion.Checked)
+            {
+                PorteAvion.debut.x = posDepartX;
+                PorteAvion.debut.y = posDepartY;
+                PorteAvion.fin.x = finX;
+                PorteAvion.fin.y = finY;
+            }
+            else if(RBTN_ContreTorpille.Checked)
+            {
+                ContreTorpille.debut.x = posDepartX;
+                ContreTorpille.debut.y = posDepartY;
+                ContreTorpille.fin.x = finX;
+                ContreTorpille.fin.y = finY;
+            }
+            else if(RBTN_Croiseur.Checked)
+            {
+                Croiseur.debut.x = posDepartX;
+                Croiseur.debut.y = posDepartY;
+                Croiseur.fin.x = finX;
+                Croiseur.fin.y = finY; 
+            }
+            else if(RBTN_SousMarin.Checked)
+            {
+                SousMarin.debut.x = posDepartX;
+                SousMarin.debut.y = posDepartY;
+                SousMarin.fin.x = finX;
+                SousMarin.fin.y = finY;                
+            }
+            else
+            {
+                Torpilleur.debut.x = posDepartX;
+                Torpilleur.debut.y = posDepartY;
+                Torpilleur.fin.x = finX;
+                Torpilleur.fin.y = finY;    
+            }
         }
         //enleve les carre vert
         private void enleverChoix() {
@@ -296,10 +383,56 @@ namespace battleship
         //enleve tout les bateau de la grille et permet de replacer les bateau
         private void BTN_replace_Click(object sender, EventArgs e)
         {
+            RBTN_PorteAvion.Checked = true;
             firstClick = true;
             enabledCheckBox();
             enleverBateau();
             panel1.Visible = true;
-        } 
-    }
+        }
+
+        private void BTN_Quit_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
+                         "Message de confirmation",
+                         MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
+                         "Message de confirmation",
+                         MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                e.Cancel=true;
+            }
+        }
+   }
+    public class Bateau
+    {
+        public int longueur { get; set; }
+        public String nom { get; set; }
+        public position debut = new position();
+        public position fin = new position();
+        public Bateau(int l, String N)
+        {
+            longueur = l;
+            nom = N;
+            debut.x = 0;
+            debut.y = 0;
+            fin.x = 0;
+            fin.y = 0;
+        }
+    };
+    public class position{
+      public int x;
+      public int y;
+
+        public position(){
+            x=0;
+            y=0;
+        }
+    };
 }

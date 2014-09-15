@@ -288,6 +288,7 @@
             this.BTN_Quit.TabIndex = 4;
             this.BTN_Quit.Text = "Quitter";
             this.BTN_Quit.UseVisualStyleBackColor = true;
+            this.BTN_Quit.Click += new System.EventHandler(this.BTN_Quit_Click);
             // 
             // RBTN_PorteAvion
             // 
@@ -396,6 +397,8 @@
             this.Controls.Add(this.GridAttack);
             this.Name = "Form1";
             this.Text = "battleship";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.GridAttack)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridPlayer)).EndInit();
             this.panel1.ResumeLayout(false);
