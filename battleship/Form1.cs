@@ -390,16 +390,6 @@ namespace battleship
             panel1.Visible = true;
         }
 
-        private void BTN_Quit_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
-                         "Message de confirmation",
-                         MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
-        }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
@@ -408,6 +398,11 @@ namespace battleship
             {
                 e.Cancel=true;
             }
+        }
+
+        private void BTN_Quit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
    }
     public class Bateau
