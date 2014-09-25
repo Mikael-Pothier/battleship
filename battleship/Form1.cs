@@ -438,6 +438,7 @@ namespace battleship
             panel1.Visible = true;
         }
 
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
