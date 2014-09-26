@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +14,9 @@ namespace battleship
 {
     public partial class Form1 : Form
     {
+        static Socket sck;
+        int Numport = 1;
+
         const int bateauCellule = 3;
         const int attaque = 4;
 
@@ -102,12 +107,54 @@ namespace battleship
                 BTN_NouvellePartie.Visible = true;
 
                 placerBateauMatrice();
+                EnvoyerBateauServeur();
             }
             else
             {
                 MessageBox.Show("Placer tout les bateaux pour commencer la partie");
             }
         }
+
+        private void EnvoyerBateauServeur()
+        {
+            sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.114"), 1234);
+            try
+            {
+                sck.Connect(localEndPoint);
+            }
+            catch
+            {
+                MessageBox.Show("Erreur de connexion");
+            }
+
+            if(sck.Connected)
+            {
+                string text = "Jolie test";
+                byte[] data = Encoding.ASCII.GetBytes(text);
+
+                sck.Send(data);
+                //Console.Write("Data Sent!\r\n");
+                //Console.Read();
+            }
+        }
+
+        private String ConvertirMatriceEnString()
+        {
+            String Bateau=null;
+            for(int i=0; i <= 10;i++)
+            {
+                for(int j=0; j <= 10;j++)
+                {
+                    if(matricePosition[i,j]==3)
+                    {
+                       // Bateau = ;
+                    }
+                }
+            }
+            return Bateau;
+        }
+
         //place les bateau dans la matrice
         private void placerBateauMatrice() {
             for (int i = 0; i < GridPlayer.RowCount; ++i)
@@ -138,6 +185,7 @@ namespace battleship
             BTN_replace.Visible = true;
 
             enleverBateau();
+            sck.Close(); //A verif
             enabledCheckBox();
 
             estCommencer = false;
@@ -389,7 +437,6 @@ namespace battleship
             enleverBateau();
             panel1.Visible = true;
         }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
@@ -399,7 +446,6 @@ namespace battleship
                 e.Cancel=true;
             }
         }
-
         private void BTN_Quit_Click(object sender, EventArgs e)
         {
             Application.Exit();
