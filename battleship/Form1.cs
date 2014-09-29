@@ -437,8 +437,6 @@ namespace battleship
             enleverBateau();
             panel1.Visible = true;
         }
-
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (MessageBox.Show("Êtes-vous sur de vouloir quitter?",
@@ -448,7 +446,6 @@ namespace battleship
                 e.Cancel=true;
             }
         }
-
         private void BTN_Quit_Click(object sender, EventArgs e)
         {
             Application.Exit();
