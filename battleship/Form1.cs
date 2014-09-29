@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BateauDLL;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace battleship
 {
@@ -27,18 +29,14 @@ namespace battleship
         bool estCommencer = false;
 
         String [] ligneHeader={"A","B","C","D","E","F","G","H","I","J"};
-        Bateau PorteAvion = new Bateau(5, "Porte-Avion");
-        Bateau Croiseur = new Bateau(4, "Croiseur");
-        Bateau ContreTorpille = new Bateau(3,"Contre-Torpilleur");
-        Bateau SousMarin = new Bateau(3,"Sous-Marin");
-        Bateau Torpilleur = new Bateau(2,"Torpilleur");
+        Joueur player = new Joueur("player1");
         int bateauChoisisLength;
         int[,] matriceAttaque = new int[10, 10];
         int[,] matricePosition = new int[10, 10];
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            bateauChoisisLength = PorteAvion.longueur;
+            bateauChoisisLength = player.PorteAvion.longueur;
         }
         public Form1()
         {
@@ -62,7 +60,17 @@ namespace battleship
             int posY= GridAttack.CurrentCell.RowIndex;
             if (matriceAttaque[posX, posY] == 0)
             {
-                //envoyer posx,posy
+                position pos = new position();
+                pos.x = posX;
+                pos.y = posY;
+                byte[] data;
+                BinaryFormatter b = new BinaryFormatter();
+                using (var stream = new MemoryStream())
+                {
+                    b.Serialize(stream, pos);
+                    data = stream.ToArray();
+                }
+                sck.Send(data);               
             }
             else
             {
@@ -74,20 +82,20 @@ namespace battleship
         private void RBTN_Bateau_CheckedChanged(object sender, EventArgs e)
         {
             if(RBTN_Croiseur.Checked){
-                bateauChoisisLength =Croiseur.longueur;
+                bateauChoisisLength =player.Croiseur.longueur;
             }
             else if(RBTN_ContreTorpille.Checked){
-                bateauChoisisLength = ContreTorpille.longueur;
+                bateauChoisisLength = player.ContreTorpille.longueur;
             }
             else if(RBTN_SousMarin.Checked){
-                bateauChoisisLength = SousMarin.longueur;
+                bateauChoisisLength = player.SousMarin.longueur;
             }
             else if (RBTN_Torpilleur.Checked)
             {
-                bateauChoisisLength = Torpilleur.longueur;
+                bateauChoisisLength = player.Torpilleur.longueur;
             }
             else {
-                bateauChoisisLength = PorteAvion.longueur;
+                bateauChoisisLength = player.PorteAvion.longueur;
             }
         }
 
@@ -130,22 +138,20 @@ namespace battleship
 
             if(sck.Connected)
             {
-                string text = GetBateauString(); 
-                byte[] data = Encoding.ASCII.GetBytes(text);
-
+                byte[] data;
+                BinaryFormatter b = new BinaryFormatter();
+                using (var stream = new MemoryStream())
+                {
+                    b.Serialize(stream, player);
+                    data = stream.ToArray();
+                }
                 sck.Send(data);
-                //Console.Write("Data Sent!\r\n");
-                //Console.Read();
             }
         }
 
         private String GetBateauString()
         {
-            return PorteAvion.nom + "," + PorteAvion.debut.x.ToString() + "," + PorteAvion.debut.y.ToString() + "," + PorteAvion.fin.x.ToString() + "," + PorteAvion.fin.y.ToString() + ";"
-                    + Croiseur.nom + "," + Croiseur.debut.x.ToString() + "," + Croiseur.debut.y.ToString() + "," + Croiseur.fin.x.ToString() + "," + Croiseur.fin.y.ToString() + ";"
-                    + ContreTorpille.nom + "," + ContreTorpille.debut.x.ToString() + "," + ContreTorpille.debut.y.ToString() + "," + ContreTorpille.fin.x.ToString() + "," + ContreTorpille.fin.y.ToString() + ";"
-                    + SousMarin.nom + "," + SousMarin.debut.x.ToString() + "," + SousMarin.debut.y.ToString() + "," + SousMarin.fin.x.ToString() + "," + SousMarin.fin.y.ToString() + ";"
-                    + Torpilleur.nom + "," + Torpilleur.debut.x.ToString() + "," + Torpilleur.debut.y.ToString() + "," + Torpilleur.fin.x.ToString() + "," + Torpilleur.fin.y.ToString() + ";";
+            return null;
         }
 
         //place les bateau dans la matrice
@@ -318,45 +324,155 @@ namespace battleship
             posFinX = posDepartX + bateauChoisisLength - 1;
             posFinY = posDepartY;
             GridPlayer.Rows[posSecondY].Cells[posSecondX].Selected = false;
-            initCoordoneebateau(posFinX, posFinY);
+            initCoordoneebateau();
         }
-        private void initCoordoneebateau(int finX, int finY)
+        private int getOrientation() { 
+            //haut
+            if (posDepartX == getposX() && posDepartY - 1 == getposY())
+                return 1;
+            //bas
+            else if (posDepartX == getposX() && posDepartY + 1 == getposY())
+                return 2;
+            //gauche
+            else if (posDepartX - 1 == getposX() && posDepartY == getposY())
+                return 3;
+            //droite
+            else
+                return 4;
+        }
+        private void initCoordoneebateau()
         {
+            int ori = getOrientation();
 
             if(RBTN_PorteAvion.Checked)
             {
-                PorteAvion.debut.x = posDepartX;
-                PorteAvion.debut.y = posDepartY;
-                PorteAvion.fin.x = finX;
-                PorteAvion.fin.y = finY;
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    if(ori==1)
+                    {
+                        player.PorteAvion.cases[i].x = posDepartX;
+                        player.PorteAvion.cases[i].y = posDepartY-i;
+                    }
+                    else if (ori == 2) 
+                    {
+                        player.PorteAvion.cases[i].x = posDepartX;
+                        player.PorteAvion.cases[i].y = posDepartY+i;                    
+                    }
+                    else if (ori == 3)
+                    {
+                        player.PorteAvion.cases[i].x = posDepartX-i;
+                        player.PorteAvion.cases[i].y = posDepartY;
+                    }
+                    else 
+                    {
+                        player.PorteAvion.cases[i].x = posDepartX+i;
+                        player.PorteAvion.cases[i].y = posDepartY;                   
+                    }
+                }
             }
-            else if(RBTN_ContreTorpille.Checked)
+            else if (RBTN_ContreTorpille.Checked)
             {
-                ContreTorpille.debut.x = posDepartX;
-                ContreTorpille.debut.y = posDepartY;
-                ContreTorpille.fin.x = finX;
-                ContreTorpille.fin.y = finY;
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    if (ori == 1)
+                    {
+                        player.ContreTorpille.cases[i].x = posDepartX;
+                        player.ContreTorpille.cases[i].y = posDepartY - i;
+                    }
+                    else if (ori == 2)
+                    {
+                        player.ContreTorpille.cases[i].x = posDepartX;
+                        player.ContreTorpille.cases[i].y = posDepartY + i;
+                    }
+                    else if (ori == 3)
+                    {
+                        player.ContreTorpille.cases[i].x = posDepartX - i;
+                        player.ContreTorpille.cases[i].y = posDepartY;
+                    }
+                    else
+                    {
+                        player.ContreTorpille.cases[i].x = posDepartX + i;
+                        player.ContreTorpille.cases[i].y = posDepartY;
+                    }
+                }
             }
-            else if(RBTN_Croiseur.Checked)
+            else if (RBTN_Croiseur.Checked)
             {
-                Croiseur.debut.x = posDepartX;
-                Croiseur.debut.y = posDepartY;
-                Croiseur.fin.x = finX;
-                Croiseur.fin.y = finY; 
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    if (ori == 1)
+                    {
+                        player.Croiseur.cases[i].x = posDepartX;
+                        player.Croiseur.cases[i].y = posDepartY - i;
+                    }
+                    else if (ori == 2)
+                    {
+                        player.Croiseur.cases[i].x = posDepartX;
+                        player.Croiseur.cases[i].y = posDepartY + i;
+                    }
+                    else if (ori == 3)
+                    {
+                        player.Croiseur.cases[i].x = posDepartX - i;
+                        player.Croiseur.cases[i].y = posDepartY;
+                    }
+                    else
+                    {
+                        player.Croiseur.cases[i].x = posDepartX + i;
+                        player.Croiseur.cases[i].y = posDepartY;
+                    }
+                }
             }
-            else if(RBTN_SousMarin.Checked)
+            else if (RBTN_SousMarin.Checked)
             {
-                SousMarin.debut.x = posDepartX;
-                SousMarin.debut.y = posDepartY;
-                SousMarin.fin.x = finX;
-                SousMarin.fin.y = finY;                
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    if (ori == 1)
+                    {
+                        player.SousMarin.cases[i].x = posDepartX;
+                        player.SousMarin.cases[i].y = posDepartY - i;
+                    }
+                    else if (ori == 2)
+                    {
+                        player.SousMarin.cases[i].x = posDepartX;
+                        player.SousMarin.cases[i].y = posDepartY + i;
+                    }
+                    else if (ori == 3)
+                    {
+                        player.SousMarin.cases[i].x = posDepartX - i;
+                        player.SousMarin.cases[i].y = posDepartY;
+                    }
+                    else
+                    {
+                        player.SousMarin.cases[i].x = posDepartX + i;
+                        player.SousMarin.cases[i].y = posDepartY;
+                    }
+                }
             }
             else
             {
-                Torpilleur.debut.x = posDepartX;
-                Torpilleur.debut.y = posDepartY;
-                Torpilleur.fin.x = finX;
-                Torpilleur.fin.y = finY;    
+                for (int i = 0; i < bateauChoisisLength; ++i)
+                {
+                    if (ori == 1)
+                    {
+                        player.Torpilleur.cases[i].x = posDepartX;
+                        player.Torpilleur.cases[i].y = posDepartY - i;
+                    }
+                    else if (ori == 2)
+                    {
+                        player.Torpilleur.cases[i].x = posDepartX;
+                        player.Torpilleur.cases[i].y = posDepartY + i;
+                    }
+                    else if (ori == 3)
+                    {
+                        player.Torpilleur.cases[i].x = posDepartX - i;
+                        player.Torpilleur.cases[i].y = posDepartY;
+                    }
+                    else
+                    {
+                        player.Torpilleur.cases[i].x = posDepartX + i;
+                        player.Torpilleur.cases[i].y = posDepartY;
+                    }
+                }
             }
         }
         //enleve les carre vert
@@ -444,29 +560,4 @@ namespace battleship
             Application.Exit();
         }
    }
-    //public class Bateau
-    //{
-    //    public int longueur { get; set; }
-    //    public String nom { get; set; }
-    //    public position debut = new position();
-    //    public position fin = new position();
-    //    public Bateau(int l, String N)
-    //    {
-    //        longueur = l;
-    //        nom = N;
-    //        debut.x = 0;
-    //        debut.y = 0;
-    //        fin.x = 0;
-    //        fin.y = 0;
-    //    }
-    //};
-    //public class position{
-    //  public int x;
-    //  public int y;
-
-    //    public position(){
-    //        x=0;
-    //        y=0;
-    //    }
-    //};
 }
