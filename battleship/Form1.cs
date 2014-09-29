@@ -9,13 +9,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BateauDLL;
 
 namespace battleship
 {
     public partial class Form1 : Form
     {
         static Socket sck;
-        int Numport = 1;
 
         const int bateauCellule = 3;
         const int attaque = 4;
@@ -130,7 +130,7 @@ namespace battleship
 
             if(sck.Connected)
             {
-                string text = "Jolie test";
+                string text = GetBateauString(); 
                 byte[] data = Encoding.ASCII.GetBytes(text);
 
                 sck.Send(data);
@@ -139,20 +139,13 @@ namespace battleship
             }
         }
 
-        private String ConvertirMatriceEnString()
+        private String GetBateauString()
         {
-            String Bateau=null;
-            for(int i=0; i <= 10;i++)
-            {
-                for(int j=0; j <= 10;j++)
-                {
-                    if(matricePosition[i,j]==3)
-                    {
-                       // Bateau = ;
-                    }
-                }
-            }
-            return Bateau;
+            return PorteAvion.nom + "," + PorteAvion.debut.x.ToString() + "," + PorteAvion.debut.y.ToString() + "," + PorteAvion.fin.x.ToString() + "," + PorteAvion.fin.y.ToString() + ";"
+                    + Croiseur.nom + "," + Croiseur.debut.x.ToString() + "," + Croiseur.debut.y.ToString() + "," + Croiseur.fin.x.ToString() + "," + Croiseur.fin.y.ToString() + ";"
+                    + ContreTorpille.nom + "," + ContreTorpille.debut.x.ToString() + "," + ContreTorpille.debut.y.ToString() + "," + ContreTorpille.fin.x.ToString() + "," + ContreTorpille.fin.y.ToString() + ";"
+                    + SousMarin.nom + "," + SousMarin.debut.x.ToString() + "," + SousMarin.debut.y.ToString() + "," + SousMarin.fin.x.ToString() + "," + SousMarin.fin.y.ToString() + ";"
+                    + Torpilleur.nom + "," + Torpilleur.debut.x.ToString() + "," + Torpilleur.debut.y.ToString() + "," + Torpilleur.fin.x.ToString() + "," + Torpilleur.fin.y.ToString() + ";";
         }
 
         //place les bateau dans la matrice
@@ -451,29 +444,29 @@ namespace battleship
             Application.Exit();
         }
    }
-    public class Bateau
-    {
-        public int longueur { get; set; }
-        public String nom { get; set; }
-        public position debut = new position();
-        public position fin = new position();
-        public Bateau(int l, String N)
-        {
-            longueur = l;
-            nom = N;
-            debut.x = 0;
-            debut.y = 0;
-            fin.x = 0;
-            fin.y = 0;
-        }
-    };
-    public class position{
-      public int x;
-      public int y;
+    //public class Bateau
+    //{
+    //    public int longueur { get; set; }
+    //    public String nom { get; set; }
+    //    public position debut = new position();
+    //    public position fin = new position();
+    //    public Bateau(int l, String N)
+    //    {
+    //        longueur = l;
+    //        nom = N;
+    //        debut.x = 0;
+    //        debut.y = 0;
+    //        fin.x = 0;
+    //        fin.y = 0;
+    //    }
+    //};
+    //public class position{
+    //  public int x;
+    //  public int y;
 
-        public position(){
-            x=0;
-            y=0;
-        }
-    };
+    //    public position(){
+    //        x=0;
+    //        y=0;
+    //    }
+    //};
 }
