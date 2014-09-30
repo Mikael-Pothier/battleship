@@ -89,11 +89,11 @@ namespace battleship
             String[] data = message.Split(new char[]{','});
             if (int.Parse(data[0]) == touche)
             {
-                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Style.BackColor = Color.Red;
-                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Selected = false;
+                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
+                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
             }
             else
-                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Style.BackColor = Color.Blue;
+                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Blue;
             MessageBox.Show(data[3]);
         }
         private String recevoirResultat()
@@ -156,7 +156,7 @@ namespace battleship
         private void EnvoyerBateauServeur()
         {
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.113"), 1234);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.114"), 1234);
             try
             {
                 sck.Connect(localEndPoint);
