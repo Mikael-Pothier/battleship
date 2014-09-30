@@ -20,7 +20,8 @@ namespace battleship
         static Socket sck;
 
         const int bateauCellule = 3;
-        const int attaque = 4;
+        const int touche = 1;
+        const int manque = 2;
 
         int posDepartX;
         int posDepartY;
@@ -76,7 +77,36 @@ namespace battleship
             {
                 MessageBox.Show("Vous-avez déjà lancé une torpille ici");
             }
-
+            String message=null;
+            do
+            {
+                message = recevoirResultat();
+            }while(message ==null);
+            traiterMessage(message);
+        }
+        private void traiterMessage(String message)
+        {
+            String[] data = message.Split(new char[]{','});
+            if (int.Parse(data[0]) == touche)
+            {
+                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Style.BackColor = Color.Red;
+                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Selected = false;
+            }
+            else
+                GridAttack.Rows[int.Parse(data[1])].Cells[int.Parse(data[2])].Style.BackColor = Color.Blue;
+            MessageBox.Show(data[3]);
+        }
+        private String recevoirResultat()
+        {
+            byte[] buff = new byte[sck.SendBufferSize];
+            int bytesRead = sck.Receive(buff);
+            byte[] formatted = new byte[bytesRead];
+            for (int i = 0; i < bytesRead; i++)
+            {
+                formatted[i] = buff[i];
+            }
+            string strData = Encoding.ASCII.GetString(formatted);
+            return strData;
         }
         //place la grosseur du bateau choisis
         private void RBTN_Bateau_CheckedChanged(object sender, EventArgs e)
@@ -126,7 +156,7 @@ namespace battleship
         private void EnvoyerBateauServeur()
         {
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.114"), 1234);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.113"), 1234);
             try
             {
                 sck.Connect(localEndPoint);
