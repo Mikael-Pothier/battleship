@@ -1,0 +1,5 @@
+C:\Users\200666155\Documents\GitHub\battleship\battleship\bin\Release\battleship.exe.config
+C:\Users\200666155\Documents\GitHub\battleship\battleship\obj\Release\battleship.csprojResolveAssemblyReference.cache
+C:\Users\200666155\Documents\GitHub\battleship\battleship\obj\Release\battleship.Form1.resources
+C:\Users\200666155\Documents\GitHub\battleship\battleship\obj\Release\battleship.Properties.Resources.resources
+C:\Users\200666155\Documents\GitHub\battleship\battleship\obj\Release\battleship.csproj.GenerateResource.Cache

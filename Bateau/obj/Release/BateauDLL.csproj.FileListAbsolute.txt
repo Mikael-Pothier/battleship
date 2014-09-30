@@ -1,0 +1,5 @@
+C:\Users\200666155\Documents\GitHub\battleship\Bateau\bin\Release\Bateau.dll
+C:\Users\200666155\Documents\GitHub\battleship\Bateau\bin\Release\Bateau.pdb
+C:\Users\200666155\Documents\GitHub\battleship\Bateau\obj\Release\BateauDLL.csprojResolveAssemblyReference.cache
+C:\Users\200666155\Documents\GitHub\battleship\Bateau\obj\Release\Bateau.dll
+C:\Users\200666155\Documents\GitHub\battleship\Bateau\obj\Release\Bateau.pdb
