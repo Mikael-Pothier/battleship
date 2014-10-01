@@ -57,9 +57,30 @@ namespace battleship
         //pas finis
         private void BTN_Attack_Click(object sender, EventArgs e)
         {
+            bool aAttaque=envoyerAttaque();
+            if (aAttaque)
+            {
+                BTN_Attack.Enabled = false;
+                String message = null;
+                message = lire();
+                traiterMessageAattaque(message);
+                if (message != "vous avez gagnes" && message != "vous avez perdus")
+                {
+                    message = lire();
+                    traiterMessageEteAttaque(message);
+                    BTN_Attack.Enabled = true;
+                }
+                else
+                {
+                    BTN_Attack.Enabled = false;
+                }
+            }
+        }
+        private bool envoyerAttaque()
+        {
             int posX = GridAttack.CurrentCell.ColumnIndex;
-            int posY= GridAttack.CurrentCell.RowIndex;
-            if (matriceAttaque[posX, posY] == 0)
+            int posY = GridAttack.CurrentCell.RowIndex;
+            if (GridAttack.Rows[posY].Cells[posX].Style.BackColor == Color.Empty)
             {
                 position pos = new position();
                 pos.x = posX;
@@ -71,30 +92,59 @@ namespace battleship
                     b.Serialize(stream, pos);
                     data = stream.ToArray();
                 }
-                sck.Send(data);               
+                sck.Send(data);
             }
             else
             {
                 MessageBox.Show("Vous-avez déjà lancé une torpille ici");
+                return false;
             }
-            String message=null;
-            do
-            {
-                message = recevoirResultat();
-            }while(message ==null);
-            traiterMessage(message);
+            return true;
         }
-        private void traiterMessage(String message)
+        private void traiterMessageAattaque(String message)
         {
             String[] data = message.Split(new char[]{','});
-            if (int.Parse(data[0]) == touche)
+            int number;
+            if (int.TryParse(data[0], out number))
             {
-                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
-                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
+                if (int.Parse(data[0]) == touche)
+                {
+                    GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
+                    GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
+                }
+                else
+                {
+                    GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Blue;
+                }
+                MessageBox.Show(data[3]);
             }
-            else
-                GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Blue;
-            MessageBox.Show(data[3]);
+            else 
+            {
+                MessageBox.Show(data[0]);
+            }
+        }
+        private void traiterMessageEteAttaque(String message)
+        {
+            String[] data = message.Split(new char[] { ',' });
+            int number;
+            if (int.TryParse(data[0], out number))
+            {
+                if (int.Parse(data[0]) == touche)
+                {
+                    GridPlayer.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
+                    GridPlayer.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
+                }
+                else
+                {
+                    GridPlayer.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Blue;
+                }
+                MessageBox.Show(data[3]);
+            }
+            else 
+            {
+                MessageBox.Show(data[0]);
+            }
+            
         }
         private String recevoirResultat()
         {
@@ -143,20 +193,41 @@ namespace battleship
 
                 estCommencer = true;
                 BTN_NouvellePartie.Visible = true;
-
+                
                 placerBateauMatrice();
                 EnvoyerBateauServeur();
+
+                String message = null;
+                message = lire();
+                MessageBox.Show(message);
+                BTN_Attack.Enabled = true;
+                message = lire();
+                if (message == "2")
+                {
+                    BTN_Attack.Enabled = false;
+                    message = lire();
+                    traiterMessageEteAttaque(message);
+                    BTN_Attack.Enabled = true;
+                }
             }
             else
             {
                 MessageBox.Show("Placer tout les bateaux pour commencer la partie");
             }
         }
-
+        private String lire()
+        {
+            String message = null;
+            do
+            {
+                message = recevoirResultat();
+            } while (message == null);
+            return message;
+        }
         private void EnvoyerBateauServeur()
         {
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.114"), 1234);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.113"), 1234);
             try
             {
                 sck.Connect(localEndPoint);
@@ -225,7 +296,8 @@ namespace battleship
             {
                 for (int y = 0; y < GridPlayer.RowCount; ++y)
                 {
-                    GridPlayer.Rows[i].Cells[y].Style.BackColor = Color.White;
+                    GridPlayer.Rows[i].Cells[y].Style.BackColor = Color.Empty;
+                    GridAttack.Rows[i].Cells[y].Style.BackColor = Color.Empty;
                 }
             }            
         }

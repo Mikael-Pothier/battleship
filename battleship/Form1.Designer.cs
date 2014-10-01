@@ -261,6 +261,7 @@
             // 
             // BTN_Attack
             // 
+            this.BTN_Attack.Enabled = false;
             this.BTN_Attack.Location = new System.Drawing.Point(598, 33);
             this.BTN_Attack.Name = "BTN_Attack";
             this.BTN_Attack.Size = new System.Drawing.Size(106, 44);
