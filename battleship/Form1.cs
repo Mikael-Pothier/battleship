@@ -73,13 +73,21 @@ namespace battleship
                 else
                 {
                     BTN_Attack.Enabled = false;
+                    envoyerMessage("ok");
+                    newGame();
                 }
             }
+        }
+        private void envoyerMessage(String message)
+        {
+            byte[] data = Encoding.ASCII.GetBytes(message);
+            sck.Send(data);       
         }
         private bool envoyerAttaque()
         {
             int posX = GridAttack.CurrentCell.ColumnIndex;
             int posY = GridAttack.CurrentCell.RowIndex;
+            GridAttack.Rows[posY].Cells[posX].Selected = false;
             if (GridAttack.Rows[posY].Cells[posX].Style.BackColor == Color.Empty)
             {
                 position pos = new position();
@@ -110,7 +118,6 @@ namespace battleship
                 if (int.Parse(data[0]) == touche)
                 {
                     GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
-                    GridAttack.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
                 }
                 else
                 {
@@ -132,7 +139,6 @@ namespace battleship
                 if (int.Parse(data[0]) == touche)
                 {
                     GridPlayer.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Style.BackColor = Color.Red;
-                    GridPlayer.Rows[int.Parse(data[2])].Cells[int.Parse(data[1])].Selected = false;
                 }
                 else
                 {
@@ -143,6 +149,7 @@ namespace battleship
             else 
             {
                 MessageBox.Show(data[0]);
+                newGame();
             }
             
         }
@@ -279,17 +286,23 @@ namespace battleship
         /*POUR LINSTANT IL NE FAIT QU AFFICHER LES RADIO BUTTON ET LE BUTTON PRET*/
         private void BTN_NouvellePartie_Click(object sender, EventArgs e)
         {
+            envoyerMessage("ok");
+            newGame();
+        }
+        private void newGame()
+        {
             BTN_NouvellePartie.Visible = false;
             panel1.Visible = true;
             BTN_Place.Visible = true;
             BTN_replace.Visible = true;
 
+            sck.Close();
+
             enleverBateau();
-            sck.Close(); //A verif
             enabledCheckBox();
 
             estCommencer = false;
-            firstClick = true;
+            firstClick = true;            
         }
         private void enleverBateau() {
             for (int i = 0; i < GridPlayer.ColumnCount; ++i)
