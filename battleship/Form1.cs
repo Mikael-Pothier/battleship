@@ -32,7 +32,7 @@ namespace battleship
         String [] ligneHeader={"A","B","C","D","E","F","G","H","I","J"};
         Joueur player = new Joueur("player1");
         int bateauChoisisLength;
-        int[,] matriceAttaque = new int[10, 10];
+        int[,] matriceAttaque = new int[10, 10]; //Matrice qui contient les attaques du Joueur
         int[,] matricePosition = new int[10, 10];
 
         private void Form1_Load(object sender, EventArgs e)
@@ -45,6 +45,8 @@ namespace battleship
             createGrid();
             RBTN_PorteAvion.Checked = true;
         }
+
+        //Fonction qui génère les grilles de jeux (Attaque et Bateau du joueur)
         private void createGrid() {
             for (int i = 0; i < GridAttack.ColumnCount; ++i) {
                 GridAttack.Rows.Add();              
@@ -53,8 +55,9 @@ namespace battleship
                 GridPlayer.Rows[i].HeaderCell.Value = ligneHeader[i];
             }
         }
-        //fait une attaque
-        //pas finis
+        
+        // Fonction qui attaque la grille de l'adversaire selon la case choise. Elle verifie si
+        // la partie est gagné ou perdu ou si elle continue selon le message recu du serveur
         private void BTN_Attack_Click(object sender, EventArgs e)
         {
             bool aAttaque=envoyerAttaque();
@@ -78,11 +81,15 @@ namespace battleship
                 }
             }
         }
+
+        //Fonction qui envoie un message au serveur
         private void envoyerMessage(String message)
         {
             byte[] data = Encoding.ASCII.GetBytes(message);
             sck.Send(data);       
         }
+
+        //Fonction qui envoie la position de l'attaque au serveur et verifie si la position a déja été attaqué
         private bool envoyerAttaque()
         {
             int posX = GridAttack.CurrentCell.ColumnIndex;
@@ -109,6 +116,9 @@ namespace battleship
             }
             return true;
         }
+
+        // Fonction qui traite le message d'attaque si le client est l'attaquant via le serveur et affecte la case
+        // de la grille du joueur en rouge si un bateau est touché sinon en bleu pour une cible manquée.
         private void traiterMessageAattaque(String message)
         {
             String[] data = message.Split(new char[]{','});
@@ -130,6 +140,9 @@ namespace battleship
                 MessageBox.Show(data[0]);
             }
         }
+
+        // Fonction qui traite le message si le client est celui qui est attaqué via le serveur et affecte la case
+        // de la grille du joueur en rouge si un bateau est touché sinon en bleu pour une cible manquée.
         private void traiterMessageEteAttaque(String message)
         {
             String[] data = message.Split(new char[] { ',' });
@@ -153,6 +166,8 @@ namespace battleship
             }
             
         }
+
+        //Fonction qui recoit le resultat d'un attaque a savoir s'il y a un bateau ou non a l'endroit attaqué
         private String recevoirResultat()
         {
             byte[] buff = new byte[sck.SendBufferSize];
@@ -165,7 +180,8 @@ namespace battleship
             string strData = Encoding.ASCII.GetString(formatted);
             return strData;
         }
-        //place la grosseur du bateau choisis
+
+        //Fonction qui determine la grosseur du bateau choisis pour le placement
         private void RBTN_Bateau_CheckedChanged(object sender, EventArgs e)
         {
             if(RBTN_Croiseur.Checked){
@@ -186,8 +202,9 @@ namespace battleship
             }
         }
 
-        //rentre les position des bateau dans la matrice et enleve le bouton et les radio button
-        /*RESTE A PLACER LES BATEAU DANS LA MATRICE*/
+        // Fonction qui entre les position des bateau dans la matrice et enleve les boutons et les radio buttons
+        // et affiche que la partie est commencé lorsque les 2 joueurs sont connectés. Empeche de commencer un parti
+        // si les bateaux ne sont pas tous placés
         private void BTN_Place_Click(object sender, EventArgs e)
         {
             if (estPlace())
@@ -222,6 +239,8 @@ namespace battleship
                 MessageBox.Show("Placer tout les bateaux pour commencer la partie");
             }
         }
+
+        // Fonction qui lit un message du serveur
         private String lire()
         {
             String message = null;
@@ -231,6 +250,8 @@ namespace battleship
             } while (message == null);
             return message;
         }
+
+        //Envoie les données des bateaux du joueur au serveur
         private void EnvoyerBateauServeur()
         {
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -257,11 +278,6 @@ namespace battleship
             }
         }
 
-        private String GetBateauString()
-        {
-            return null;
-        }
-
         //place les bateau dans la matrice
         private void placerBateauMatrice() {
             for (int i = 0; i < GridPlayer.RowCount; ++i)
@@ -282,13 +298,15 @@ namespace battleship
         {
             return !RBTN_ContreTorpille.Enabled && !RBTN_Croiseur.Enabled && !RBTN_PorteAvion.Enabled && !RBTN_SousMarin.Enabled && !RBTN_Torpilleur.Enabled;
         }
-        //creer une nouvelle partie !
-        /*POUR LINSTANT IL NE FAIT QU AFFICHER LES RADIO BUTTON ET LE BUTTON PRET*/
+
+        //Fonction qui créer une nouvelle partie
         private void BTN_NouvellePartie_Click(object sender, EventArgs e)
         {
             envoyerMessage("ok");
             newGame();
         }
+
+        // Fonction qui remet les buttons pour le placement des bateaux et close le socket
         private void newGame()
         {
             BTN_NouvellePartie.Visible = false;
@@ -304,6 +322,8 @@ namespace battleship
             estCommencer = false;
             firstClick = true;            
         }
+
+        //Fonction qui remet toutes les cases des grilles avec la couleur blanc
         private void enleverBateau() {
             for (int i = 0; i < GridPlayer.ColumnCount; ++i)
             {
@@ -314,6 +334,8 @@ namespace battleship
                 }
             }            
         }
+
+        // Fonction qui remet les radio buttons pour le placement des bateaux
         private void enabledCheckBox(){
             RBTN_PorteAvion.Enabled = true;
             RBTN_Croiseur.Enabled = true;
@@ -321,6 +343,9 @@ namespace battleship
             RBTN_SousMarin.Enabled = true;
             RBTN_Torpilleur.Enabled = true;
         }
+
+        // Fonction qui gère la selection de la case sur la grille du joueur
+        // pour placer les bateaux
         private void GridPlayer_Click(object sender,EventArgs e)
         {
             if (!estCommencer && !estPlace())
@@ -335,7 +360,7 @@ namespace battleship
                         GridPlayer.Rows[posDepartY].Cells[posDepartX].Style.BackColor = Color.Gray;
                         choix(posDepartX, posDepartY);
                         firstClick = false;
-                        //enleve le choix des bateau donc il ne peut pas en choisisr dautre lors du deuxieme click
+                        //enleve le choix des bateaux donc il ne peut pas en choisisr dautre lors du deuxieme click
                         panel1.Visible = false;
                     }
                     else
@@ -358,9 +383,9 @@ namespace battleship
             {
                 GridPlayer.ClearSelection();
             }
-
         }
-        //disable les checkbox si il a ete place
+
+        //disable les checkbox si le bateau en question est placé
         private void disableCheckBox(){
             if(RBTN_PorteAvion.Checked)
                 RBTN_PorteAvion.Enabled=false;
@@ -374,7 +399,8 @@ namespace battleship
                 RBTN_Torpilleur.Enabled = false;
             trouverFirstEnabled();
         }
-        //trouve le premier checkbox pour le 
+
+        // Vérifie si le bateau peut etre placé 
         private void trouverFirstEnabled() {
             if (RBTN_PorteAvion.Enabled)
                 RBTN_PorteAvion.Checked = true;
@@ -387,7 +413,8 @@ namespace battleship
             else if (RBTN_Torpilleur.Enabled)
                 RBTN_Torpilleur.Checked = true;
             }
-        //place le bateau selon lorientation choisis
+
+        // Place le bateau selon l'orientation choisis
         private void placerBateau() {
             int posSecondX = getposX();
             int posSecondY = getposY();
@@ -441,6 +468,8 @@ namespace battleship
             GridPlayer.Rows[posSecondY].Cells[posSecondX].Selected = false;
             initCoordoneebateau();
         }
+
+        // Fonction qui retourne l'orientation d'un bateau
         private int getOrientation() { 
             //haut
             if (posDepartX == getposX() && posDepartY - 1 == getposY())
@@ -455,6 +484,8 @@ namespace battleship
             else
                 return 4;
         }
+
+        // Initialise le bateau choisi dans la flotte du joueur (Class Player)
         private void initCoordoneebateau()
         {
             int ori = getOrientation();
@@ -590,7 +621,8 @@ namespace battleship
                 }
             }
         }
-        //enleve les carre vert
+
+        // Enleve les carres vert 
         private void enleverChoix() {
             if (posDepartY + 1 <GridPlayer.RowCount && GridPlayer.Rows[posDepartY + 1].Cells[posDepartX].Style.BackColor == Color.Green)
             GridPlayer.Rows[posDepartY+1].Cells[posDepartX].Style.BackColor = Color.White;
@@ -601,29 +633,34 @@ namespace battleship
             if (posDepartX -1 >=0 && GridPlayer.Rows[posDepartY].Cells[posDepartX - 1].Style.BackColor == Color.Green)
             GridPlayer.Rows[posDepartY].Cells[posDepartX-1].Style.BackColor=Color.White;
         }
-      //donne la posistion de la colone choisis du gridplayer
+
+        // Donne la posistion de la colone choisis du gridplayer
         private int getposX() {
             return GridPlayer.CurrentCell.ColumnIndex;
         }
-        //donne la posistion de la row choisis du gridplayer
+
+        // Donne la posistion de la row choisis du gridplayer
         private int getposY() {
             return GridPlayer.CurrentCell.RowIndex;
         }
-        //place les choix possibles lorseque l'on click pour placer un bateau(en croix)
+
+        // Place les choix possibles lorseque l'on click pour placer un bateau(en croix)
         private void choix(int posX,int posY) {
-            //bas
+            //Bas
             if (posY + bateauChoisisLength <= 10 && verifierChaqueCase(posX, posY,"Down"))
                 GridPlayer.Rows[posY + 1].Cells[posX].Style.BackColor = Color.Green;
-
+            //Haut
             if (posY - bateauChoisisLength >= -1 && verifierChaqueCase(posX,posY,"Up"))
                 GridPlayer.Rows[posY - 1].Cells[posX].Style.BackColor = Color.Green;
-
+            //Droite
             if (posX + bateauChoisisLength <= 10 && verifierChaqueCase(posX,posY,"Right"))
                 GridPlayer.Rows[posY].Cells[posX+1].Style.BackColor = Color.Green;
+            //Gauche
             if (posX - bateauChoisisLength >= -1 && verifierChaqueCase(posX, posY, "Left"))
                 GridPlayer.Rows[posY].Cells[posX-1].Style.BackColor = Color.Green;            
         }
-        //verifie si il y a deja un bateau de placer
+
+        // Verifie si il y a deja un bateau de placer
         private bool verifierChaqueCase(int posX, int posY,string Orientation) {
             if (Orientation == "Up") {
                 for (int i = 0; i < bateauChoisisLength; ++i)
@@ -652,7 +689,8 @@ namespace battleship
             }
             return true;
         }
-        //enleve tout les bateau de la grille et permet de replacer les bateau
+
+        // Enlève tous les bateaux de la grille et permet de les replacer
         private void BTN_replace_Click(object sender, EventArgs e)
         {
             RBTN_PorteAvion.Checked = true;
