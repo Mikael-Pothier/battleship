@@ -375,9 +375,9 @@
             // 
             // BTN_replace
             // 
-            this.BTN_replace.Location = new System.Drawing.Point(601, 437);
+            this.BTN_replace.Location = new System.Drawing.Point(598, 437);
             this.BTN_replace.Name = "BTN_replace";
-            this.BTN_replace.Size = new System.Drawing.Size(95, 42);
+            this.BTN_replace.Size = new System.Drawing.Size(98, 42);
             this.BTN_replace.TabIndex = 12;
             this.BTN_replace.Text = "Replacer";
             this.BTN_replace.UseVisualStyleBackColor = true;
@@ -387,7 +387,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(962, 509);
+            this.ClientSize = new System.Drawing.Size(962, 515);
             this.Controls.Add(this.BTN_replace);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BTN_Place);
@@ -396,6 +396,7 @@
             this.Controls.Add(this.BTN_Attack);
             this.Controls.Add(this.GridPlayer);
             this.Controls.Add(this.GridAttack);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "Form1";
             this.Text = "battleship";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);

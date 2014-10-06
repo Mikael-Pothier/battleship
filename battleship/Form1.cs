@@ -234,7 +234,7 @@ namespace battleship
         private void EnvoyerBateauServeur()
         {
             sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.113"), 1234);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("172.17.104.114"), 1234);
             try
             {
                 sck.Connect(localEndPoint);
